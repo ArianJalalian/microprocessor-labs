@@ -1,15 +1,71 @@
 
 .data 
-    num dw 0
+    num dw 0     
+    result dw 0 
     ten dw 10  
-    result dw 1489   
     counter dw 0  
+
+
+
+main proc near: 
+     
+    call input ; input first number 
+    push num ; save the number        
+               
+               
+               
+    mov dx, 10             
+    mov ax, 200h  
+    int 21h ; print a new line
+             
+             
+             
+    call input ; input second number 
+    push num ; save the number 
+    
+    pop ax ; move second num to ax for powering     
+    mul ax ; ax * ax for second num 
+    
+    mov bx, ax ; move low part of product to bx 
+     
+    pop ax ; move first num to ax for powering     
+    mul ax ; ax * ax for first num   
+    
+    sub ax, bx ; ax = ax - bx 
+    jnc print_diffrence ; cf flag is set in previous instruciton
+    
+    
+    call print ; 0 is already in result 
+    
+    ret
+    
+    print_diffrence: 
+        
+        push ax  
+        pop result ; result = ax which is the diffrence
+          
+        call print  
+   
+     
+    ret    
     
 
-print proc near:
+main endp 
+
+    
+
+print proc near:           
              
           push ax ; store ax
-          push dx ; store dx
+          push dx ; store dx 
+          
+          
+          
+          mov dx, 10             
+          mov ax, 200h  
+          int 21h ; print a new line
+          
+          
             
           mov ax, result ; mov result to ax to be numerator
                   
