@@ -6,6 +6,7 @@ org 100h
    counter dw 0 
    ten dw 10  
    mean dw 0
+   num2 dw 0
    array dw 100 (?)  
    
 .code
@@ -17,7 +18,9 @@ main proc near:
         
   call input 
   push num 
-  mov bx, num  
+  mov bx, num
+  mov num2, bx
+  push num2  
   
   mov dl, 10             
   mov ah, 02h  
@@ -67,7 +70,7 @@ main proc near:
   div bl
   push ax
   pop result
-  call print  
+  call print 
       
   ret
 main endp   
