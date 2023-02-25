@@ -6,7 +6,6 @@ org 100h
    counter dw 0 
    ten dw 10  
    mean dw 0
-   num2 dw 0
    array dw 100 (?)  
    
 .code
@@ -16,30 +15,27 @@ main proc near:
   mov ax, @data
   mov ds, ax
         
-  call input 
+  call input ;get number of elements
   push num 
-  mov bx, num
-  mov num2, bx
-  push num2  
+  mov bx, num 
   
   mov dl, 10             
   mov ah, 02h  
   int 21h ; print a new line 
   
-  xor si, si ;index of array, si = 0
-  mov bx, num ;bx is number of elements
-        
+  xor si, si ;index of array, i = 0
+  mov bx, num ;bx is number of elements      
   
   xor cx, cx ;counter
   loop1:
     call input ;get input
     push num
     pop ax
-    add mean, ax 
-    mov array[si], ax 
-    inc si 
+    add mean, ax  ;calculate sum of elements for mean
+    mov array[si], ax ;array[i] = input
+    inc si  ;i++
     inc si
-    inc cx  
+    inc cx  ;counter++
     mov dx, 10             
     mov ax, 200h  
     int 21h ; print a new line 
@@ -47,18 +43,18 @@ main proc near:
     cmp cx, bx ;if cx >= num, exit the loop1
     jl loop1
   
-  call insertionSort
+  call insertionSort  ;sort the unsorted array
   
     
-  xor si, si ;index of array, si = 0  
+  xor si, si ;index of array, i = 0  
   xor cx, cx ;counter
   loop2:
-    mov ax, array[si]
+    mov ax, array[si] ;ax = array[i]
     push ax
     pop result
-    call print 
+    call print ;print array[i]
     
-    inc si
+    inc si  ;i++
     inc si 
     inc cx
     cmp cx, bx ;if cx >= num, exit the loop1
@@ -67,10 +63,11 @@ main proc near:
      
   ;calculate mean 
   mov ax, mean
-  div bl
-  push ax
+  div bl   ;mean = sum of elements / number of elements => ax = ax / bl  
+  mov ah, 0
+  push ax  ;save mean
   pop result
-  call print 
+  call print ;print mean
       
   ret
 main endp   
@@ -212,123 +209,7 @@ input proc near:
     ret        
           
 
-input endp 
-
-
-is_equal proc near: 
-    
-    ; paramathers are the two top elements in stack
-    ; return will be 1 if the numbers are equal and 
-    ; will be stored in stack as well 
-    
-    pop ax ; one of the numbers 
-    pop cx ; the other one 
-    
-    
-    sub ax, cx ; the ax will be 0 if ax and cx are equal 
-    
-    
-    jz equal ; equality 
-    
-    
-    push 0 ; return 0 
-    ret
-    
-    
-    equal: 
-        
-        push 1 ; return 1 
-        
-    ret       
-
-is_equal endp  
-          
-          
-          
-is_greater proc near: 
-    
-    ; paramathers are the two top elements in stack 
-    ; return will be 1 if the top one is greater than 
-    ; the bottom one, and it will be stored in stack 
-    ; as well 
-      
-    pop ax ; first one 
-    pop cx ; second one 
-    
-    
-    sub ax, cx ; ax = ax - cx will be a postive number if ax is greater than cx 
-    jnc greater ; cf flag is set in previous instruciton
-    
-    
-    push 0 ; return 0 
-    
-    
-    
-    greater: 
-        
-        push 1 ; return 1 
-        
-    ret
-    
-
-is_greater endp
-
-
-calculate_mode proc near: 
-    
-    
-    ;pointer dw 1 ; points to elements of array 
-    mode dw array[0] ; will contain the mode at any stage of iteration 
-    ctr dw 1 ; keeps the track of how many times a value is observed
-    max dw 0 ; max observation of an element at any stage of iteration 
-    
-    mov si, 1; points to elements of array 
-    
-    while1: 
-        
-        push si ; set the paramether 
-        push num ; set the paramether 
-        
-        call is_greater ; result will be in stack      
-        pop ax ; result                            
-        
-        
-        sub ax, 1 ; zero flag will be 1 if pointer >= size 
-        jz endwhile   
-        
-          
-         
-        push array[si] ; set the paramether 
-        push array[si - 2] ; set the paramether 
-        
-        call is_equal ; result will be in stack        
-        pop ax ; result 
-        
-        sub ax, 1 ; zero flag will be 1 if the numbers are diffrent 
-        jz if 
-        
-        
-            if: 
-                inc ctr  ; increment ctr 
-                add si, 2 ; increment ctr  
-                jmp while1 ; go back to while
-                
-                
-      
-        
-    endwhile1: 
-        
-        push mode ; return mode 
-    
-    ret        
-        
-        
-
-
-calculate_mode endp
-
-    
-    
+input endp
 
    
 
