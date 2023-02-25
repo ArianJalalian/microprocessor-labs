@@ -6,7 +6,7 @@ org 100h
    counter dw 0 
    ten dw 10  
    mean dw 0
-   num2 dw 0  ;number of elements
+   num2 dw 0
    array dw 100 (?)  
    
 .code
@@ -16,17 +16,17 @@ main proc near:
   mov ax, @data
   mov ds, ax
         
-  call input ;get number of elements
+  call input 
   push num 
   mov bx, num
-  mov num2, bx ;num2 is number of elements
-  push num2 ;save num2 
+  mov num2, bx
+  push num2  
   
   mov dl, 10             
   mov ah, 02h  
   int 21h ; print a new line 
   
-  xor si, si ;index of array, i = 0
+  xor si, si ;index of array, si = 0
   mov bx, num ;bx is number of elements
         
   
@@ -35,11 +35,11 @@ main proc near:
     call input ;get input
     push num
     pop ax
-    add mean, ax  ;calculate sum of elements for mean
-    mov array[si], ax ;array[i] = input
-    inc si  ;i++
+    add mean, ax 
+    mov array[si], ax 
+    inc si 
     inc si
-    inc cx  ;counter++
+    inc cx  
     mov dx, 10             
     mov ax, 200h  
     int 21h ; print a new line 
@@ -47,18 +47,18 @@ main proc near:
     cmp cx, bx ;if cx >= num, exit the loop1
     jl loop1
   
-  call insertionSort  ;sort the unsorted array
+  call insertionSort
   
     
-  xor si, si ;index of array, i = 0  
+  xor si, si ;index of array, si = 0  
   xor cx, cx ;counter
   loop2:
-    mov ax, array[si] ;ax = array[i]
+    mov ax, array[si]
     push ax
     pop result
-    call print ;print array[i]
+    call print 
     
-    inc si  ;i++
+    inc si
     inc si 
     inc cx
     cmp cx, bx ;if cx >= num, exit the loop1
@@ -67,10 +67,10 @@ main proc near:
      
   ;calculate mean 
   mov ax, mean
-  div bl   ;mean = sum of elements / number of elements => ax = ax / bl
-  push ax  ;save mean
+  div bl
+  push ax
   pop result
-  call print ;print mean
+  call print 
       
   ret
 main endp   
@@ -241,8 +241,37 @@ is_equal proc near:
         
     ret       
 
-is_equal endp 
+is_equal endp  
+          
+          
+          
+is_greater proc near: 
+    
+    ; paramathers are the two top elements in stack 
+    ; return will be 1 if the top one is greater than 
+    ; the bottom one, and it will be stored in stack 
+    ; as well 
+      
+    pop ax ; first one 
+    pop cx ; second one 
+    
+    
+    sub ax, cx ; ax = ax - cx will be a postive number if ax is greater than cx 
+    jnc greater ; cf flag is set in previous instruciton
+    
+    
+    push 0 ; return 0 
+    
+    
+    
+    greater: 
+        
+        push 1 ; return 1 
+        
+    ret
+    
 
+is_greater endp
 
 
 calculate_mode proc near: 
