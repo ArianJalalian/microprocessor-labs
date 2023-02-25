@@ -277,6 +277,56 @@ is_greater endp
 calculate_mode proc near: 
     
     
+    pointer dw 1 ; points to elements of array 
+    mode dw array[0] ; will contain the mode at any stage of iteration 
+    ctr dw 1 ; keeps the track of how many times a value is observed
+    max dw 0 ; max observation of an element at any stage of iteration 
+    
+    while1: 
+        
+        push pointer ; set the paramether 
+        push num ; set the paramether 
+        
+        call is_greater ; result will be in stack      
+        pop ax ; result                            
+        
+        
+        sub ax, 1 ; zero flag will be 1 if pointer >= size 
+        jz endwhile   
+        
+        
+         
+        ;push array[pointer] ; set the paramether 
+        ;push array[pointer - 1] ; set the paramether 
+        
+        call is_equal ; result will be in stack        
+        pop ax ; result 
+        
+        sub ax, 1 ; zero flag will be 1 if the numbers are diffrent 
+        jz if 
+        
+        
+            if: 
+                inc ctr  ; increment ctr 
+                inc pointer ; increment ctr  
+                jmp while1 ; go back to while
+                
+                
+      
+        
+    endwhile1: 
+        
+        push mode ; return mode 
+    
+    ret        
+        
+        
+
+
+calculate_mode endp
+
+    
+    
 
    
 
