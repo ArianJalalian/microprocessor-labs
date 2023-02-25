@@ -63,22 +63,14 @@ main proc near:
   
      
   ;calculate mean 
-  call calMean 
-  push mean
+  mov ax, mean
+  div bl
+  push ax
   pop result
   call print  
       
   ret
 main endp   
-  
-calMean proc near: 
-    mov ax, mean
-    mov ah, 0
-    div bx
-    mov mean, ax 
-    push mean
-    ret
-calMean endp
     
 
   
