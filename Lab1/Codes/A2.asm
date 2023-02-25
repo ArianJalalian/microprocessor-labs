@@ -16,9 +16,8 @@ main:
   mov cx, 2 ;setting cx to second index 
   
   for:
-    mov dx, cx ;number of comparison needed, dx = cx - 1
-    dec dx
-    mov si, dx
+    mov si, cx ;number of comparison needed, si = cx - 1
+    dec si
     add si, si
     mov ax, array[si] ;ax is key, key = array[i]  
     
