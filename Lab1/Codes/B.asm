@@ -212,7 +212,42 @@ input proc near:
     ret        
           
 
-input endp
+input endp 
+
+
+is_equal proc near: 
+    
+    ; paramathers are the two top elements in stack
+    ; return will be 1 if the numbers are equal and 
+    ; will be stored in stack as well 
+    
+    pop ax ; one of the numbers 
+    pop cx ; the other one 
+    
+    
+    sub ax, cx ; the ax will be 0 if ax and cx are equal 
+    
+    
+    jz equal ; equality 
+    
+    
+    push 0 ; return 0 
+    ret
+    
+    
+    equal: 
+        
+        push 1 ; return 1 
+        
+    ret       
+
+is_equal endp 
+
+
+
+calculate_mode proc near: 
+    
+    
 
    
 
