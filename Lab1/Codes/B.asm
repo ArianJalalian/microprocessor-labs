@@ -4,7 +4,8 @@ org 100h
    num dw 0   ;number of elements    
    result dw 0
    counter dw 0 
-   ten dw 10  
+   ten dw 10   
+   two db 2
    mean dw 0
    array dw 100 (?)   
    
@@ -74,7 +75,8 @@ main proc near:
   pop result ; result = mode  
   call print
                
-               
+  
+  call calculate_median             
                
                
    MOV AH, 4CH
@@ -415,4 +417,87 @@ is_greater proc near:
     
 
 is_greater endp
+                     
+                     
+                     
+calculate_median proc near:  
+    
+    ;pop cx ; returning address in cx 
+    
+    mov ax, bx 
+     
+    
+    div two ; size / 2, remainder will be in dx 
+    sub dx, 1 ; zerp flag is 1 if size is odd 
+    
+    jz odd  
+    jnz even 
+    
+    
+    odd: 
+        add ax, ax ; index of median in bytes  
+        mov si, ax 
+        push array[si] 
+        pop result ; result is median 
+        call print  
+        ret 
+        
+        
+    even: 
+        first dw 0 
+        second dw 0 
+        
+        add ax, ax ; index of second in bytes 
+        push ax  
+        pop second ; second is index of second in bytes  
+        
+        sub ax, 2 ; index of first in bytes   
+        push ax 
+        pop first ; first is index of first in bytes 
+        
+        mov si, first 
+        push array[si] ; one of the numbers  
+        
+        mov si, second
+        push array[si] ; the other one of the numbers  
+        
+        pop ax ; ax = second element
+        pop cx ; cx = first element 
+        
+        add ax, cx ; ax = ax + cx   
+        div two ; 
+        
+        sub dx, 1 ; zerp flag is 1 if size is odd 
+    
+        jz odd1  
+        jnz even1 
+        
+        odd1: 
+            push ax 
+            pop result 
+            call print ; print the quotient 
+            
+            mov ah, 2 
+            mov dl, '.' 
+            int 21h 
+             
+            mov ah, 2 
+            mov dl, '5' 
+            int 21h  
+            
+            ret
+        
+        
+        even1: 
+            push ax 
+            pop result 
+            call print ; print the quotient  
+                  
+       
+            ret
+        
+            
+    
 
+
+calculate_median endp                         
