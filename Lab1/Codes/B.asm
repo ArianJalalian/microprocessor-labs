@@ -7,83 +7,132 @@ org 100h
    ten dw 10   
    two db 2
    mean dw 0
-   array dw 100 (?)   
+   array dw 100 dup(?)   
+   
+   
+   
+   sa db 'sorted array:', '$'
+   m db 'mean:' , '$'   
+   mo db 'mode:' , '$'  
+   me db 'median:', '$'  
    
 .code
 
 
-main proc near:
-      mov ax, @data
-      mov ds, ax
+main proc near: 
+    
+    mov ax, @data
+    mov ds, ax
         
-  call input ;get number of elements
-  push num 
-  mov bx, num 
+    call input ;get number of elements
+    push num 
+    mov bx, num 
   
-  mov dl, 10             
-  mov ah, 02h  
-  int 21h ; print a new line 
+    mov dl, 10             
+    mov ah, 02h  
+    int 21h ; print a new line 
   
-  xor si, si ;index of array, i = 0
-  mov bx, num ;bx is number of elements      
+    xor si, si ;index of array, i = 0
+    mov bx, num ;bx is number of elements      
   
-  xor cx, cx ;counter
-  loop1:
-    call input ;get input
-    push num
-    pop ax
-    add mean, ax  ;calculate sum of elements for mean
-    mov array[si], ax ;array[i] = input
-    inc si  ;i++
-    inc si
-    inc cx  ;counter++
+    xor cx, cx ;counter
+    
+    loop1:  
+        call input ;get input
+        push num
+        pop ax
+        add mean, ax  ;calculate sum of elements for mean
+        mov array[si], ax ;array[i] = input
+        inc si  ;i++
+        inc si
+        inc cx  ;counter++
+        mov dx, 10             
+        mov ax, 200h  
+        int 21h ; print a new line 
+    
+        cmp cx, bx ;if cx >= num, exit the loop1
+        jl loop1
+  
+
+    call insertionSort  ;sort the unsorted array
+  
+    mov dx,0
+    lea dx,sa
+    mov ah,09
+    int 21h 
+  
+    
+    xor si, si ;index of array, i = 0  
+    xor cx, cx ;counter
+    
+    loop2:
+        
+        mov ax, array[si] ;ax = array[i]
+        push ax
+        pop result
+        call print ;print array[i]
+    
+        inc si  ;i++
+        inc si 
+        inc cx
+        cmp cx, bx ;if cx >= num, exit the loop1
+        jl loop2
+  
+  
+  
+  
+     
+    ;calculate mean  
+  
+    mov dx, 10             
+    mov ax, 200h  
+    int 21h ; print a new line
+  
+    lea dx,m
+    mov ah,09
+    int 21h 
+   
+    mov ax, mean
+    div bl   ;mean = sum of elements / number of elements => ax = ax / bl  
+    mov ah, 0
+    push ax  ;save mean
+    pop result
+    call print ;print mean  
+  
+    ; calculate mode 
+  
     mov dx, 10             
     mov ax, 200h  
     int 21h ; print a new line 
-    
-    cmp cx, bx ;if cx >= num, exit the loop1
-    jl loop1
   
-
-  call insertionSort  ;sort the unsorted array
+    lea dx,mo
+    mov ah,09
+    int 21h  
   
-    
-  xor si, si ;index of array, i = 0  
-  xor cx, cx ;counter
-  loop2:
-    mov ax, array[si] ;ax = array[i]
-    push ax
-    pop result
-    call print ;print array[i]
-    
-    inc si  ;i++
-    inc si 
-    inc cx
-    cmp cx, bx ;if cx >= num, exit the loop1
-    jl loop2
-  
-     
-  ;calculate mean 
-  mov ax, mean
-  div bl   ;mean = sum of elements / number of elements => ax = ax / bl  
-  mov ah, 0
-  push ax  ;save mean
-  pop result
-  call print ;print mean  
-  
-  call calculate_mode   
-  pop result ; result = mode  
-  call print
+    call calculate_mode   
+    pop result ; result = mode  
+    call print
                
   
-  call calculate_median             
+    ; calculate median 
+  
+    mov dx, 10             
+    mov ax, 200h  
+    int 21h ; print a new line
+  
+    lea dx,me
+    mov ah,09
+    int 21h  
+  
+  
+    call calculate_median             
+             
                
+    mov ah, 4ch
+    mov al, 01 ;your return code.
+    int 21h             
                
-   MOV AH, 4CH
-   MOV AL, 01 ;your return code.
-   INT 21H             
-               
-  ret
+    ret
 main endp   
     
 
@@ -420,6 +469,7 @@ is_greater endp
                      
                      
                      
+
 calculate_median proc near:  
     
     ;pop cx ; returning address in cx 
@@ -427,15 +477,17 @@ calculate_median proc near:
     mov ax, bx 
      
     
+    
     div two ; size / 2, remainder will be in dx 
-    sub dx, 1 ; zerp flag is 1 if size is odd 
+    sub ah, 1 ; zerp flag is 1 if size is odd 
     
     jz odd  
     jnz even 
     
     
     odd: 
-        add ax, ax ; index of median in bytes  
+        add al, al ; index of median in bytes   
+        mov ah, 0
         mov si, ax 
         push array[si] 
         pop result ; result is median 
@@ -447,7 +499,8 @@ calculate_median proc near:
         first dw 0 
         second dw 0 
         
-        add ax, ax ; index of second in bytes 
+        add al, al ; index of second in bytes 
+        mov ah, 0 
         push ax  
         pop second ; second is index of second in bytes  
         
@@ -467,12 +520,13 @@ calculate_median proc near:
         add ax, cx ; ax = ax + cx   
         div two ; 
         
-        sub dx, 1 ; zerp flag is 1 if size is odd 
+        sub ah, 1 ; zerp flag is 1 if size is odd 
     
         jz odd1  
         jnz even1 
         
-        odd1: 
+        odd1:    
+            mov ah, 0
             push ax 
             pop result 
             call print ; print the quotient 
@@ -485,19 +539,22 @@ calculate_median proc near:
             mov dl, '5' 
             int 21h  
             
+         
             ret
         
         
         even1: 
+            mov ah, 0 
             push ax 
             pop result 
             call print ; print the quotient  
                   
-       
+           
             ret
         
             
     
 
 
-calculate_median endp                         
+calculate_median endp       
+                         
