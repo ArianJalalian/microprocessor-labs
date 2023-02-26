@@ -6,7 +6,7 @@ org 100h
    counter dw 0 
    ten dw 10  
    mean dw 0
-   array dw 100 (?)  
+   array dw 100 (?)   
    
 .code
 
@@ -43,17 +43,8 @@ main proc near:
     cmp cx, bx ;if cx >= num, exit the loop1
     jl loop1
   
-<<<<<<< HEAD
-  call insertionSort    
-  
-  ;call calculate_mode   
-  ;pop result ; result = mode  
-  ;call print 
-  
-  
-=======
+
   call insertionSort  ;sort the unsorted array
->>>>>>> 29f67dadd7a92399e745b246924c91a940ad6024
   
     
   xor si, si ;index of array, i = 0  
@@ -77,8 +68,19 @@ main proc near:
   mov ah, 0
   push ax  ;save mean
   pop result
-  call print ;print mean
-      
+  call print ;print mean  
+  
+  call calculate_mode   
+  pop result ; result = mode  
+  call print
+               
+               
+               
+               
+   MOV AH, 4CH
+   MOV AL, 01 ;your return code.
+   INT 21H             
+               
   ret
 main endp   
     
@@ -217,22 +219,23 @@ input proc near:
     pop ax ; restore ax  
     
     ret        
-          
-
-<<<<<<< HEAD
+           
+           
 input endp 
 
 
 
-calculate_mode proc near:       
+calculate_mode proc near:  
     
+          
+    address dw 0
     
-    pop bx ; returning address  
+    pop address ; returning address  
     
     
     last dw 0 ; last index in bytes
     
-    mov ax, num 
+    mov ax, bx 
     add ax, ax 
     sub ax, 2  
     push ax 
@@ -325,6 +328,7 @@ calculate_mode proc near:
             jz update2       
             
             push mode ; return mode 
+            push address ; returning address 
             
             ret
             
@@ -336,6 +340,7 @@ calculate_mode proc near:
                 pop mode ; mode = array[i - 1]        
         
             push mode ; return mode 
+            push address ; returning address 
                 
             ret
         
@@ -375,9 +380,6 @@ is_equal proc near:
         push dx ; returning address
         
     ret       
-=======
-input endp
->>>>>>> 29f67dadd7a92399e745b246924c91a940ad6024
 
 is_equal endp  
           
