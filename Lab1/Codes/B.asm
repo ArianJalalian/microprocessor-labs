@@ -13,8 +13,8 @@ org 100h
 
 
 main proc near:
-  mov ax, @data
-  mov ds, ax
+      mov ax, @data
+      mov ds, ax
         
   call input 
   push num 
@@ -47,7 +47,13 @@ main proc near:
     cmp cx, bx ;if cx >= num, exit the loop1
     jl loop1
   
-  call insertionSort
+  call insertionSort    
+  
+  ;call calculate_mode   
+  ;pop result ; result = mode  
+  ;call print 
+  
+  
   
     
   xor si, si ;index of array, si = 0  
@@ -215,11 +221,136 @@ input proc near:
 input endp 
 
 
+
+calculate_mode proc near:       
+    
+    
+    pop bx ; returning address  
+    
+    
+    last dw 0 ; last index in bytes
+    
+    mov ax, num 
+    add ax, ax 
+    sub ax, 2  
+    push ax 
+    pop last ; last index in bytes = 2 * size - 2 
+    
+    
+    
+    mode dw 0 ; will contain the mode at any stage of iteration 
+    ctr dw 1 ; keeps the track of how many times a value is observed
+    max dw 0 ; max observation of an element at any stage of iteration 
+    
+    mov si, 0 ; points to elements of array 
+    mov ax, array[si]  
+    push ax 
+    pop mode ; mode = array[0] 
+    
+    mov si, 2 ; point to second element
+    
+    while1: 
+        
+        push si ; set the paramether 
+        push last ; set the paramether 
+        
+        call is_greater ; result will be in stack      
+        pop ax ; result                            
+        
+        
+        sub ax, 1 ; zero flag will be 1 if pointer >= size 
+        jnz endwhile1   
+        
+          
+         
+        push array[si] ; set the paramether 
+        push array[si - 2] ; set the paramether 
+        
+        call is_equal ; result will be in stack        
+        pop ax ; result                                                               
+        
+        sub ax, 1 ; zero flag will be 1 if the numbers are diffrent 
+        jnz else 
+        jz if 
+        
+        
+            if: 
+                inc ctr  ; increment ctr 
+                add si, 2 ; increment ctr  
+                jmp while1 ; go back to while
+            
+            
+            else:       
+                push max ; set the paramether 
+                push ctr ; set the paramether 
+        
+                call is_greater ; result will be in stack      
+                pop ax ; result   
+                
+                sub ax, 1 ; zero flag will be 1 ctr is greater than max
+                jz update       
+                
+                push 1 
+                pop ctr ; ctr = 1 
+                
+                add si, 2 ; increment ctr  
+                jmp while1 ; go back to while  
+                    
+                    update: 
+                        push ctr  
+                        pop max ; max = ctr 
+                        
+                        push array[si - 2] 
+                        pop mode ; mode = array[i - 1]   
+                        
+                        push 1 
+                        pop ctr ; ctr = 1 
+                
+                        add si, 2 ; increment ctr  
+                        jmp while1 ; go back to while  
+                        
+      
+        
+    endwhile1:             
+        
+            push max ; set the paramether 
+            push ctr ; set the paramether 
+        
+            call is_greater ; result will be in stack      
+            pop ax ; result   
+                
+            sub ax, 1 ; zero flag will be 1 ctr is greater than max
+            jz update2       
+            
+            push mode ; return mode 
+            
+            ret
+            
+            update2: 
+                push ctr  
+                pop max ; max = ctr 
+                        
+                push array[si - 2] 
+                pop mode ; mode = array[i - 1]        
+        
+            push mode ; return mode 
+                
+            ret
+        
+
+
+calculate_mode endp
+
+
+
 is_equal proc near: 
     
-    ; paramathers are the two top elements in stack
+    ; paramathers are the two top elements in stack 
+    ; ( with respect to returning address )
     ; return will be 1 if the numbers are equal and 
     ; will be stored in stack as well 
+    
+    pop dx ; the returning address 
     
     pop ax ; one of the numbers 
     pop cx ; the other one 
@@ -232,12 +363,14 @@ is_equal proc near:
     
     
     push 0 ; return 0 
+    push dx ; returning address 
     ret
     
     
     equal: 
         
-        push 1 ; return 1 
+        push 1 ; return 1  
+        push dx ; returning address
         
     ret       
 
@@ -250,7 +383,9 @@ is_greater proc near:
     ; paramathers are the two top elements in stack 
     ; return will be 1 if the top one is greater than 
     ; the bottom one, and it will be stored in stack 
-    ; as well 
+    ; as well   
+    
+    pop dx ; the returning address
       
     pop ax ; first one 
     pop cx ; second one 
@@ -261,78 +396,16 @@ is_greater proc near:
     
     
     push 0 ; return 0 
-    
+    push dx ; returning address   
+    ret
     
     
     greater: 
         
         push 1 ; return 1 
-        
+        push dx ; returning address
     ret
     
 
 is_greater endp
 
-
-calculate_mode proc near: 
-    
-    
-    ;pointer dw 1 ; points to elements of array 
-    mode dw array[0] ; will contain the mode at any stage of iteration 
-    ctr dw 1 ; keeps the track of how many times a value is observed
-    max dw 0 ; max observation of an element at any stage of iteration 
-    
-    mov si, 1; points to elements of array 
-    
-    while1: 
-        
-        push si ; set the paramether 
-        push num ; set the paramether 
-        
-        call is_greater ; result will be in stack      
-        pop ax ; result                            
-        
-        
-        sub ax, 1 ; zero flag will be 1 if pointer >= size 
-        jz endwhile   
-        
-          
-         
-        push array[si] ; set the paramether 
-        push array[si - 2] ; set the paramether 
-        
-        call is_equal ; result will be in stack        
-        pop ax ; result 
-        
-        sub ax, 1 ; zero flag will be 1 if the numbers are diffrent 
-        jz if 
-        
-        
-            if: 
-                inc ctr  ; increment ctr 
-                add si, 2 ; increment ctr  
-                jmp while1 ; go back to while
-                
-                
-      
-        
-    endwhile1: 
-        
-        push mode ; return mode 
-    
-    ret        
-        
-        
-
-
-calculate_mode endp
-
-    
-    
-
-   
-
-  
-  
-  
-  
