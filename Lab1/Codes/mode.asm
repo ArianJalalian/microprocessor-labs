@@ -2,7 +2,7 @@ org 100h
 
 .data 
 
-array dw 1h,1h,2h,5h,5h,5h,5h,7h,7h,7h
+array dw 1h,1h,2h,5h,5h,5h,7h,7h,7h,7h
 num dw 10 
                            
                            
