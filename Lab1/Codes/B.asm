@@ -105,23 +105,23 @@ main proc near:
     call print 
     
     
-    mov dh, 0
+    mov dh, 0    ;calculate float
     mov ax , dx 
     
     mov cx, 10 
-    mul cx 
+    mul cx       ;first mul reminder by 10
     
-    div bl 
+    div bl       ;then div by size of array
     mov ah, 0  
     
-    mov cl, al
+    mov cl, al   
     add cl, 48
     
     mov ah, 2 
     mov dl, '.' 
     int 21h   
     
-    mov ah, 2
+    mov ah, 2    ;print float
     mov dl, cl
     int 21h
       
