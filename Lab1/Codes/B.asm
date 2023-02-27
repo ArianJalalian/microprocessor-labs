@@ -84,26 +84,56 @@ main proc near:
      
     ;calculate mean  
   
-    mov dx, 10             
-    mov ax, 200h  
-    int 21h ; print a new line
+    mov dl, 10
+    mov ah, 02h
+    int 21h
+    mov dl, 13
+    mov ah, 02h
+    int 21h   ;print new line
   
     lea dx,m
     mov ah,09
     int 21h 
    
     mov ax, mean
-    div bl   ;mean = sum of elements / number of elements => ax = ax / bl  
-    mov ah, 0
-    push ax  ;save mean
+    div bl   ;mean = sum of elements / number of elements => ax = ax / bl 
+    mov dl, ah ; float       
+    mov ah, 0 
+    mov mean, ax
+    push mean  ;save mean
     pop result
-    call print ;print mean  
+    call print 
+    
+    
+    mov dh, 0
+    mov ax , dx 
+    
+    mov cx, 10 
+    mul cx 
+    
+    div bl 
+    mov ah, 0  
+    
+    mov cl, al
+    add cl, 48
+    
+    mov ah, 2 
+    mov dl, '.' 
+    int 21h   
+    
+    mov ah, 2
+    mov dl, cl
+    int 21h
+      
   
     ; calculate mode 
   
-    mov dx, 10             
-    mov ax, 200h  
-    int 21h ; print a new line 
+    mov dl, 10
+    mov ah, 02h
+    int 21h
+    mov dl, 13
+    mov ah, 02h
+    int 21h   ;print new line 
   
     lea dx,mo
     mov ah,09
@@ -116,9 +146,12 @@ main proc near:
   
     ; calculate median 
   
-    mov dx, 10             
-    mov ax, 200h  
-    int 21h ; print a new line
+    mov dl, 10
+    mov ah, 02h
+    int 21h
+    mov dl, 13
+    mov ah, 02h
+    int 21h   ;print new line
   
     lea dx,me
     mov ah,09
@@ -184,9 +217,12 @@ print proc near:
           
           
           
-          mov dx, 10             
-          mov ax, 200h  
-          int 21h ; print a new line
+          mov dl, 10
+          mov ah, 02h
+          int 21h
+          mov dl, 13
+          mov ah, 02h
+          int 21h   ;print new line
           
           
             
