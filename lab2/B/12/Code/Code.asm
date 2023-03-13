@@ -32,7 +32,7 @@ keypad_input proc near
 		mov al, 101B
 		out 80H, al ; outputing the enable middle col 
 		
-		IN al, 82H ; input from rows
+		in al, 82H ; input from rows
 		
 		
 		cmp al, 11111111B ; if it is all 1s then no button is pressed
@@ -45,12 +45,12 @@ keypad_input proc near
 	
 	handling_the_odd: 
 		mov bx, 1h ; if it is odd then 1 is stored
-		MOV ds:[8], bx
-		RET
+		mov ds:[8], bx
+		ret
 	handling_the_even: 
 		mov bx, 2h ; if it is even then 2 is stored
-		MOV ds:[8], bx
-		RET
+		mov ds:[8], bx
+		ret
 
 keypad_input endp
 
