@@ -32,7 +32,7 @@ keypad_input proc near
 		mov al, 101B
 		out 80H, al ; outputing the enable middle col 
 		
-		IN AL, 82H ; input from rows
+		IN al, 82H ; input from rows
 		
 		
 		cmp al, 11111111B ; if it is all 1s then no button is pressed
